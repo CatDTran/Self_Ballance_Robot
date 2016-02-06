@@ -6,11 +6,7 @@
 #define kD  0//derivatives gain (calibratable)
 #define dt  .01//the time step over which integration is taken(in seccond)
 #define setAngle  90//value to approach
-//-------------------FUNCITONS PROTOTYPES--------------------------//
-void complementaryFilter();
-void PIDcontroller(int* drive, float* previous, float current);
 //------------------DEFINE SOME GLOBAL VERIABLES-------------------//
-
 int16_t integral = 0;
 int16_t error = 0;
 int16_t P = 0;
@@ -24,14 +20,15 @@ float static gyroscopeFilteredAngle = 0;
 float static complementaryAngle;//the current measured angle
 float static previousAngle;//store value read from previous loop
 //-------------------SETUP-----------------------------------------//
+MPU6050 mpu6050Sensor;
 void setup(){
-  MPU6050 mpu6050Sensor();  
+  mpu6050Sensor = MPU6050();
   Serial.begin(9600);
 }
 //-----------------------LOOP---------------------------------------//
 void loop()
-{
-  
+{  
   float x = mpu6050Sensor.getAccelerationX();
+  Serial.println(x);
   delay(1000);
 }
