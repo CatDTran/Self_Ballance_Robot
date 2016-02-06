@@ -30,7 +30,6 @@ void setup(){
 void loop()
 {  
   float x = mpu6050Sensor.getAccelerationX();
-  x = 0;
-  Serial.print(x);
+  Serial.println(x);
   delay(500);
 }

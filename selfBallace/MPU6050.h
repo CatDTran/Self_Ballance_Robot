@@ -22,8 +22,9 @@ class MPU6050{
 		float dt;
 	public:
 		//CONSTRUCTOR------//
+
     	//INITIALIZE MPU6050
-	    void initiallizeMPU6050()
+	    void initializeMPU6050()
 	    {
 	      //Waking up MPU6050
 	      Wire.begin();
@@ -36,7 +37,7 @@ class MPU6050{
 		float getAccelerationX()
 		{
 			readMPU6050();
-			accelerationX = (float)AcX/(float)16384;
+			accelerationX = (float) AcX;// = (float)AcX/(float)16384;
 			return accelerationX;
 		}
 
@@ -50,12 +51,10 @@ class MPU6050{
 			  gyroscopeLastValue = gyroscopeCurrentValue;
 		}
 
-		//Fetch data from MPU6050
+		//Called whenever need the data from MPU6050
 		void readMPU6050()
 		{
-			Wire.begin();
 			Wire.beginTransmission(ADDRESS_MPU);
-			Wire.write(0x6B);  // PWR_MGMT_1 register
 			Wire.write(0x3B);  // starting with register 0x3B (ACCEL_XOUT_H)
 			Wire.endTransmission(false);
 			Wire.requestFrom(ADDRESS_MPU,14,true);  // request a total of 14 registers
