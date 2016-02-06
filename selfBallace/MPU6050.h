@@ -33,7 +33,7 @@ class MPU6050{
 	      Wire.write(0);     // set to zero (wakes up the MPU-6050)
 	      Wire.endTransmission(true);
 	    }
-		//GETTERS------//
+		//------GETTERS------//
 		//get and convert acceleration in X direction
 		float getAccelerationX()
 		{
