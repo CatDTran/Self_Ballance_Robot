@@ -23,12 +23,14 @@ float static previousAngle;//store value read from previous loop
 MPU6050 mpu6050Sensor;
 void setup(){
   mpu6050Sensor = MPU6050();
+  mpu6050Sensor.initializeMPU6050();
   Serial.begin(9600);
 }
 //-----------------------LOOP---------------------------------------//
 void loop()
 {  
   float x = mpu6050Sensor.getAccelerationX();
-  Serial.println(x);
-  delay(1000);
+  x = 0;
+  Serial.print(x);
+  delay(500);
 }
