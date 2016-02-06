@@ -34,13 +34,27 @@ class MPU6050{
 	      Wire.endTransmission(true);
 	    }
 		//GETTERS------//
+		//get and convert acceleration in X direction
 		float getAccelerationX()
 		{
 			readMPU6050();
-			accelerationX = (float) AcX;// = (float)AcX/(float)16384;
+			accelerationX = (float)AcX / (float)16384;
 			return accelerationX;
 		}
-
+		//get and convert acceleration in Y direction
+		float getAccelerationY()
+		{
+			readMPU6050();
+			accelerationY = (float)AcY / (float)16384;
+			return accelerationY;
+		}
+		//get and convert acceleration in Z direction
+		float getAccelerationZ()
+		{
+			readMPU6050();
+			accelerationZ = (float)AcZ / (float)16384;
+			return accelerationZ;
+		}
 		void complementaryFilter()
 		{
 			  gyroscopeCurrentValue = GyZ;//get raw value from gyroscope sensor  
