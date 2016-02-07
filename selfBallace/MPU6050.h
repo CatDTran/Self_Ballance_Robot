@@ -14,6 +14,7 @@ class MPU6050{
 		int16_t GyZ;//range from -32,768 to 32,767
 		float accelerationX, accelerationY, accelerationZ;
 		float angleX, angleY, angleZ;
+		float initialAngleX, initialAngleY, initialAngleZ;
 		float static gyroscopeLastValue;
 		float static gyroscopeCurrentValue;
 		float static gyroscopeFilteredAngle;
@@ -34,27 +35,73 @@ class MPU6050{
 	      Wire.endTransmission(true);
 	    }
 		//------GETTERS------//
-		//get and convert acceleration in X direction
+		//Get and convert acceleration in X direction
 		float getAccelerationX()
 		{
 			readMPU6050();
 			accelerationX = (float)AcX / (float)16384;
 			return accelerationX;
 		}
-		//get and convert acceleration in Y direction
+		//Get and convert acceleration in Y direction
 		float getAccelerationY()
 		{
 			readMPU6050();
 			accelerationY = (float)AcY / (float)16384;
 			return accelerationY;
 		}
-		//get and convert acceleration in Z direction
+		//Get and convert acceleration in Z direction
 		float getAccelerationZ()
 		{
 			readMPU6050();
 			accelerationZ = (float)AcZ / (float)16384;
 			return accelerationZ;
 		}
+
+		//Get and convert angular in X
+		float getAngleX()
+		{
+			readMPU6050();
+			angleX = (float) GyX / 135.0;
+			return angleX;
+		}
+
+		//Get and convert angle in Y
+		float getAngleY()
+		{
+			readMPU6050();
+			angleY = angleY + ((float) GyY / 135.0) * dt;
+			return angleY;
+		}
+		//Get and convert angle in Z
+		float getAngleZ()
+		{
+			readMPU6050();
+			angleZ = (float) GyZ / 131.0;
+			return angleZ;
+		}
+		//------SETTER------------//
+		//Set sampletime
+		void setSampleTime(float time)
+		{
+			dt = time;
+		}
+		//Set initial X angle
+		void initializeAngleX()
+		{
+			initialAngleX = getAngleX();
+		}
+		//Set initial Y angle
+		void initializeAngleY()
+		{
+			//initialAngleY = getAngleY();
+			angleY = 0;
+		}
+		//Set initial Z angle
+		void initializeAngleZ()
+		{
+			initialAngleZ = getAngleZ();
+		}
+		//--------EXTRA MEMEBER FUNCTIONS-----------//
 		void complementaryFilter()
 		{
 			  gyroscopeCurrentValue = GyZ;//get raw value from gyroscope sensor  
