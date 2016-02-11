@@ -1,6 +1,7 @@
 //this header file include a class definition for MPU6050 accelerometer which makes
 //reading data from MPU6050 accelerometer much easier
-
+//Author: Cat Tran
+//email: trandinhcat@gmail.com
 #include <Wire.h>
 const int ADDRESS_MPU=0x68;  // I2C address of the MPU-6050
 class MPU6050{
@@ -61,7 +62,7 @@ class MPU6050{
 		float getAngleX()
 		{
 			readMPU6050();
-			angleX = (float) GyX / 135.0;
+			angleX = angleX + ( (float) GyX / 131.0 ) * dt;
 			return angleX;
 		}
 
@@ -69,15 +70,21 @@ class MPU6050{
 		float getAngleY()
 		{
 			readMPU6050();
-			angleY = angleY + ((float) GyY / 135.0) * dt;
+			angleY = angleY + ( (float) GyY / 131.0 ) * dt;
 			return angleY;
 		}
 		//Get and convert angle in Z
 		float getAngleZ()
 		{
 			readMPU6050();
-			angleZ = (float) GyZ / 131.0;
+			angleZ =  angleZ + ( (float) GyZ / 131.0 ) * dt;
 			return angleZ;
+		}
+		//Get raw gyro data
+		int16_t getAngleXRaw()
+		{
+			readMPU6050();
+			return GyX;
 		}
 		//------SETTER------------//
 		//Set sampletime
@@ -88,7 +95,7 @@ class MPU6050{
 		//Set initial X angle
 		void initializeAngleX()
 		{
-			initialAngleX = getAngleX();
+			angleX = 0;
 		}
 		//Set initial Y angle
 		void initializeAngleY()
@@ -99,7 +106,7 @@ class MPU6050{
 		//Set initial Z angle
 		void initializeAngleZ()
 		{
-			initialAngleZ = getAngleZ();
+			angleZ = 0;
 		}
 		//--------EXTRA MEMEBER FUNCTIONS-----------//
 		void complementaryFilter()

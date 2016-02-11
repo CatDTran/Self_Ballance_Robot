@@ -1,5 +1,8 @@
+//Author: Cat Tran
+//email: trandinhcat@gmail.com
 //Algorithm for self ballancing robot
-//PID equation: Drive = kP*Error + kI*cumulativeError + kD*dP/dt
+//PID equation: Drive = kP*Error + kI*cumulativeError + kD*dP/
+
 #include "MPU6050.h"
 #define kP  0//proporitonal gain (calibratable)
 #define kI  0//integral gain (calibratable)
@@ -19,8 +22,10 @@ MPU6050 mpu6050Sensor;
 void setup()
 {
   mpu6050Sensor = MPU6050();
-  mpu6050Sensor.initializeMPU6050();
+  mpu6050Sensor.initializeMPU6050();//waking up mpu6050
+  mpu6050Sensor.initializeAngleX();
   mpu6050Sensor.initializeAngleY();
+  mpu6050Sensor.initializeAngleZ();
   mpu6050Sensor.setSampleTime(SAMPLE_TIME);
   Serial.begin(9600);
 }
