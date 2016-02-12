@@ -3,6 +3,8 @@
 //Author: Cat Tran
 //email: trandinhcat@gmail.com
 #include <Wire.h>
+#include <math.h>
+#define PI  3.14159265359
 const int ADDRESS_MPU=0x68;  // I2C address of the MPU-6050
 class MPU6050{
 	private:
@@ -16,6 +18,7 @@ class MPU6050{
 		float accelerationX, accelerationY, accelerationZ;
 		float angleX, angleY, angleZ;
 		float initialAngleX, initialAngleY, initialAngleZ;
+		float filteredAngleX, filteredAngleY, filteredAngleZ;
 		float static gyroscopeLastValue;
 		float static gyroscopeCurrentValue;
 		float static gyroscopeFilteredAngle;
@@ -70,7 +73,9 @@ class MPU6050{
 		float getAngleY()
 		{
 			readMPU6050();
-			angleY = angleY + ( (float) GyY / 131.0 ) * dt;
+			//angleY = angleY + ( (float) GyY / 131.0 ) * dt;
+			//angleY = (float) GyY/131.0;
+			complementaryFilterY();
 			return angleY;
 		}
 		//Get and convert angle in Z
@@ -81,10 +86,20 @@ class MPU6050{
 			return angleZ;
 		}
 		//Get raw gyro data
-		int16_t getAngleXRaw()
+		int16_t getAngleRawX()
 		{
 			readMPU6050();
 			return GyX;
+		}
+		int16_t getAngleRawY()
+		{
+			readMPU6050();
+			return GyY;
+		}
+		int16_t getAngleRawZ()
+		{
+			readMPU6050();
+			return GyZ;
 		}
 		//------SETTER------------//
 		//Set sampletime
@@ -109,14 +124,16 @@ class MPU6050{
 			angleZ = 0;
 		}
 		//--------EXTRA MEMEBER FUNCTIONS-----------//
-		void complementaryFilter()
+		void complementaryFilterY()
 		{
-			  gyroscopeCurrentValue = GyZ;//get raw value from gyroscope sensor  
-			  float gyroscopeAngleDifference = (((float)gyroscopeCurrentValue - (float)gyroscopeLastValue)/131)*dt;//then compute the difference berween last and current value, and convert to degree
-			  float accelerometerAngle = (AcZ /182.0);//calculate angle from accelerometer raw data
-			  gyroscopeFilteredAngle += gyroscopeAngleDifference;
-			  complementaryAngle = 0.95*(gyroscopeFilteredAngle) + 0.05*accelerometerAngle;
-			  gyroscopeLastValue = gyroscopeCurrentValue;
+			float angleAccelerationTerm = atan2((double) getAccelerationX(), (double) getAccelerationZ()) * 180/ PI;
+			angleY = 0.98 * (angleY + GyY * dt)/131.0 + 0.02 * angleAccelerationTerm;
+			  // gyroscopeCurrentValue = GyZ;//get raw value from gyroscope sensor  
+			  // float gyroscopeAngleDifference = (((float)gyroscopeCurrentValue - (float)gyroscopeLastValue)/131)*dt;//then compute the difference berween last and current value, and convert to degree
+			  // float accelerometerAngle = (AcZ /182.0);//calculate angle from accelerometer raw data
+			  // gyroscopeFilteredAngle += gyroscopeAngleDifference;
+			  // complementaryAngle = 0.95*(gyroscopeFilteredAngle) + 0.05*accelerometerAngle;
+			  // gyroscopeLastValue = gyroscopeCurrentValue;
 		}
 
 		//Called whenever need the data from MPU6050

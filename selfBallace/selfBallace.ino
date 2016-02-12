@@ -9,7 +9,7 @@
 #define kD  0//derivatives gain (calibratable)
 #define dt  .01//the time step over which integration is taken(in seccond)
 #define setAngle  90//value to approach
-#define SAMPLE_TIME 100
+#define SAMPLE_TIME 200
 //==================DECLARE SOME GLOBAL VARIABLES===================//
 int PWM;//pulse width modulation that will be send to controll motors' speed
 float static gyroscopeLastValue = 0;
