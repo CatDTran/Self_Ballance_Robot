@@ -6,31 +6,52 @@
 #include "MPU6050.h"
 #include <PID_v1.h>
 
-#define kP  0//proporitonal gain (calibratable)
-#define kI  0//integral gain (calibratable)
-#define kD  0//derivatives gain (calibratable)
-#define dt  .01//the time step over which integration is taken(in seccond)
-#define setAngle  90//value to approach
+#define Kp  0.0//proporitonal gain (calibratable)
+#define Ki  0.0//integral gain (calibratable)
+#define Kd  0.0//derivatives gain (calibratable)
 #define SAMPLE_TIME 200
 //==================DECLARE SOME GLOBAL VARIABLES===================//
-int PWM;//pulse width modulation that will be send to controll motors' speed
-float static gyroscopeLastValue = 0;
-float static gyroscopeCurrentValue = 0;
-float static gyroscopeFilteredAngle = 0;
-float static complementaryAngle;//the current measured angle
-float static previousAngle;//store value read from previous loop
+double pwm;
+double setAngle = 0;
+double angleY;
+//struct for motors pins out
+struct Motor{
+  public:
+    int directionControl_1;
+    int directionControl_2;
+    int speedPWM;
+};
+//initialize pins out for both motors
 MPU6050 mpu6050Sensor;
-//PID controllerPID(mpu6050Sensor.getAccelerationY(), );
+  struct Motor motorA = {2,3,9}, motorB = {4,5,10};
 //===================SETUP=========================================//
 void setup()
-{
+{  
   mpu6050Sensor.initializeMPU6050();//waking up mpu6050
-  mpu6050Sensor.setSampleTime(SAMPLE_TIME);
+  mpu6050Sensor.setSampleTime(SAMPLE_TIME);//set sample time for complementary filter
+
+  //set pins mode; all are output, obviously!!
+  pinMode(motorA.directionControl_1, OUTPUT);
+  pinMode(motorA.directionControl_2, OUTPUT);
+  pinMode(motorA.speedPWM, OUTPUT);
+  pinMode(motorB.directionControl_1, OUTPUT);
+  pinMode(motorB.directionControl_2, OUTPUT);
+  pinMode(motorA.speedPWM, OUTPUT);
+
+  PID controllerPID(&angleY, &pwm, &setAngle, Kp, Ki, Kd, DIRECT);//instantiate pid controller
   Serial.begin(9600);
 }
 //=======================LOOP=======================================//
 void loop()
 { 
+  digitalWrite(motorA.directionControl_1, HIGH);
+  digitalWrite(motorA.directionControl_2, LOW);
+  analogWrite(motorA.speedPWM, 100);
+
+  digitalWrite(motorB.directionControl_1, HIGH);
+  digitalWrite(motorB.directionControl_2, LOW);
+  analogWrite(motorB.speedPWM, 100);
+
   float angleY = mpu6050Sensor.getAngleY();
   Serial.println(angleY);
   delay(SAMPLE_TIME);
