@@ -65,7 +65,7 @@ class MPU6050{
 		float getAngleX()
 		{
 			readMPU6050();
-			angleX = angleX + ( (float) GyX / 131.0 ) * dt;
+			complementaryFilterX();
 			return angleX;
 		}
 
@@ -82,7 +82,7 @@ class MPU6050{
 		float getAngleZ()
 		{
 			readMPU6050();
-			angleZ =  angleZ + ( (float) GyZ / 131.0 ) * dt;
+			complementaryFilterZ();
 			return angleZ;
 		}
 		//Get raw gyro data
@@ -105,7 +105,7 @@ class MPU6050{
 		//Set sampletime
 		void setSampleTime(float time)
 		{
-			dt = time;
+			dt = (float) time / 1000.0;
 		}
 		//Set initial X angle
 		void initializeAngleX()
@@ -124,18 +124,21 @@ class MPU6050{
 			angleZ = 0;
 		}
 		//--------EXTRA MEMEBER FUNCTIONS-----------//
+		void complementaryFilterX()
+		{
+			float angleAccelerationTerm = atan2((double) getAccelerationZ(), (double) getAccelerationY()) * 180/ PI;
+			angleX = 0.98 *(angleAccelerationTerm + (GyX * dt)/131.0) + 0.02 * angleAccelerationTerm;
+		}
 		void complementaryFilterY()
 		{
 			float angleAccelerationTerm = atan2((double) getAccelerationX(), (double) getAccelerationZ()) * 180/ PI;
-			angleY = 0.98 * (angleY + GyY * dt)/131.0 + 0.02 * angleAccelerationTerm;
-			  // gyroscopeCurrentValue = GyZ;//get raw value from gyroscope sensor  
-			  // float gyroscopeAngleDifference = (((float)gyroscopeCurrentValue - (float)gyroscopeLastValue)/131)*dt;//then compute the difference berween last and current value, and convert to degree
-			  // float accelerometerAngle = (AcZ /182.0);//calculate angle from accelerometer raw data
-			  // gyroscopeFilteredAngle += gyroscopeAngleDifference;
-			  // complementaryAngle = 0.95*(gyroscopeFilteredAngle) + 0.05*accelerometerAngle;
-			  // gyroscopeLastValue = gyroscopeCurrentValue;
+			angleY = 0.98 *(angleAccelerationTerm + (GyY * dt)/131.0) + 0.02 * angleAccelerationTerm;
 		}
-
+		void complementaryFilterZ()
+		{
+			float angleAccelerationTerm = atan2((double) getAccelerationX(), (double) getAccelerationY()) * 180/ PI;
+			angleZ = 0.98 *(angleAccelerationTerm + (GyZ * dt)/131.0) + 0.02 * angleAccelerationTerm;
+		}
 		//Called whenever need the data from MPU6050
 		void readMPU6050()
 		{

@@ -9,7 +9,7 @@
 #define kD  0//derivatives gain (calibratable)
 #define dt  .01//the time step over which integration is taken(in seccond)
 #define setAngle  90//value to approach
-#define SAMPLE_TIME 200
+#define SAMPLE_TIME 100
 //==================DECLARE SOME GLOBAL VARIABLES===================//
 int PWM;//pulse width modulation that will be send to controll motors' speed
 float static gyroscopeLastValue = 0;
@@ -37,12 +37,17 @@ void loop()
   float z = mpu6050Sensor.getAccelerationZ();
   float angleX = mpu6050Sensor.getAngleX();
   float angleY = mpu6050Sensor.getAngleY();
-  Serial.print(x);
+  float angleZ = mpu6050Sensor.getAngleZ();
+  // Serial.print(x);
+  // Serial.print(" ");
+  // Serial.print(y);
+  // Serial.print(" ");
+  // Serial.print(z);
+  // Serial.print("  ||  ");
+  Serial.print(angleX);
   Serial.print(" ");
-  Serial.print(y);
+  Serial.print(angleY);
   Serial.print(" ");
-  Serial.print(z);
-  Serial.print("  ||  ");
-  Serial.println(angleY);
+  Serial.println(angleZ);
   delay(SAMPLE_TIME);
 }
