@@ -4,6 +4,8 @@
 //PID equation: Drive = kP*Error + kI*cumulativeError + kD*dP/
 
 #include "MPU6050.h"
+#include <PID_v1.h>
+
 #define kP  0//proporitonal gain (calibratable)
 #define kI  0//integral gain (calibratable)
 #define kD  0//derivatives gain (calibratable)
