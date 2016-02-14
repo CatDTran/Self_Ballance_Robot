@@ -9,8 +9,8 @@
 #define Kp  10//proporitonal gain (calibratable)
 #define Ki  0.0//integral gain (calibratable)
 #define Kd  0.0//derivatives gain (calibratable)
-#define SAMPLE_TIME 100
-#define PID_SAMPLE_TIME 200
+#define SAMPLE_TIME 50
+#define PID_SAMPLE_TIME 100
 //==================DECLARE SOME GLOBAL VARIABLES===================//
 double pwm;
 double setAngle = 0;
@@ -24,7 +24,7 @@ struct Motor{
 };
 //initialize pins out for both motors
 MPU6050 mpu6050Sensor;
-PID controllerPID(&angleY, &pwm, &setAngle, Kp, Ki, Kd, DIRECT);
+PID controllerPID (&angleY, &pwm, &setAngle, Kp, Ki, Kd, DIRECT);
   struct Motor motorA = {2,3,9}, motorB = {4,5,10};
 //===================SETUP=========================================//
 void setup()
@@ -39,10 +39,8 @@ void setup()
   pinMode(motorB.directionControl_2, OUTPUT);
   pinMode(motorA.speedPWM, OUTPUT);
   //Initialize pid controller
-  controllerPID.SetOutputLimits(0, 255);
   controllerPID.SetMode(AUTOMATIC);
   controllerPID.SetSampleTime(PID_SAMPLE_TIME);
-  controllerPID.SetControllerDirection(DIRECT);
   Serial.begin(9600);
 }
 //=======================LOOP=======================================//
@@ -50,17 +48,32 @@ bool computed;
 void loop()
 { 
   angleY = (double) mpu6050Sensor.getAngleY();
-  computed = controllerPID.Compute();
-  //drive motor A
-  digitalWrite(motorA.directionControl_1, HIGH);
-  digitalWrite(motorA.directionControl_2, LOW);
-  analogWrite(motorA.speedPWM, pwm);
-  //drive motor B
-  digitalWrite(motorB.directionControl_1, HIGH);
-  digitalWrite(motorB.directionControl_2, LOW);
-  analogWrite(motorB.speedPWM, pwm);
-  if(computed)
-    Serial.print("computed");
+  if(angleY < 0)
+  {
+    controllerPID.SetControllerDirection(DIRECT);
+    computed = controllerPID.Compute();
+    //drive motor A
+    digitalWrite(motorA.directionControl_1, HIGH);
+    digitalWrite(motorA.directionControl_2, LOW);
+    //drive motor B
+    digitalWrite(motorB.directionControl_1, HIGH);
+    digitalWrite(motorB.directionControl_2, LOW);
+    analogWrite(motorB.speedPWM, pwm);
+    analogWrite(motorA.speedPWM, pwm);
+  }
+  else if(angleY > 0)
+  {
+    controllerPID.SetControllerDirection(REVERSE);
+    computed = controllerPID.Compute();
+    //drive motor A
+    digitalWrite(motorA.directionControl_1, LOW);
+    digitalWrite(motorA.directionControl_2, HIGH);
+    //drive motor B
+    digitalWrite(motorB.directionControl_1, LOW);
+    digitalWrite(motorB.directionControl_2, HIGH);
+    analogWrite(motorB.speedPWM, pwm);
+    analogWrite(motorA.speedPWM, pwm);
+  }
   Serial.print("  ");
   Serial.print(pwm);
   Serial.print( "   ")  ;
