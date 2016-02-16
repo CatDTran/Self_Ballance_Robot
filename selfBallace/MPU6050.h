@@ -6,6 +6,7 @@
 #include <math.h>
 #define PI  3.14159265359
 const int ADDRESS_MPU=0x68;  // I2C address of the MPU-6050
+
 class MPU6050{
 	private:
 		int16_t AcX;
